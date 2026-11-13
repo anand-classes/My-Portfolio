@@ -1,0 +1,1 @@
+Replace puzzle-image.svg with your own picture named puzzle-image.jpg, then update the pictureUrl value in index.html to assets/puzzle-image.jpg. The 'Use my picture' button is a temporary preview for the current visitor/session; it does not upload or save the image to the website.

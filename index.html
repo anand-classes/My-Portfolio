@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#10131d">
+<title>Reeshav Anand | Solve the Puzzle</title>
+<style>
+:root{--bg:#10131d;--panel:#191f2d;--text:#f5f6fc;--muted:#aab3c5;--purple:#897bff;--mint:#48dfc8}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;background:radial-gradient(circle at 12% 8%,#29254c 0,transparent 34%),radial-gradient(circle at 90% 85%,#123d40 0,transparent 32%),var(--bg)}
+.wrap{width:min(1080px,92vw);margin:auto;padding:30px 0 55px}
+header{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:45px}
+.brand{font-weight:850;letter-spacing:.12em}.brand span{color:var(--mint)}
+header small{color:var(--muted)}
+.layout{display:grid;grid-template-columns:1fr 1fr;gap:55px;align-items:center}
+.kicker{color:var(--mint);font-size:.76rem;font-weight:800;letter-spacing:.19em;text-transform:uppercase}
+h1{font-size:clamp(2.4rem,5vw,4.5rem);line-height:1.02;letter-spacing:-.05em;margin:14px 0 18px}
+h1 em{font-style:normal;color:var(--purple)}
+.lead{color:var(--muted);line-height:1.75;font-size:1.04rem;max-width:470px}
+.instructions{margin-top:25px;padding:16px 18px;border:1px solid #ffffff1a;background:#ffffff08;border-radius:15px;color:#c8cede;line-height:1.65;font-size:.9rem}
+.game{padding:22px;border:1px solid #ffffff1c;border-radius:24px;background:linear-gradient(145deg,#ffffff12,#ffffff04);box-shadow:0 25px 80px #0006}
+.gamehead{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;gap:12px}
+.gamehead strong{font-size:1rem}.moves{color:var(--muted);font-size:.86rem}
+.board{width:100%;aspect-ratio:1;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);gap:5px;padding:5px;background:#080b12;border-radius:14px;overflow:hidden}
+.tile{border:0;border-radius:7px;min-width:0;min-height:0;cursor:pointer;background-image:var(--puzzle-image);background-size:300% 300%;background-repeat:no-repeat;box-shadow:inset 0 0 0 1px #ffffff24;transition:filter .12s,transform .12s}
+.tile:hover{filter:brightness(1.13)}.tile:focus-visible{outline:3px solid var(--mint);outline-offset:-3px}
+.blank{background:#090d16;box-shadow:inset 0 0 0 1px #ffffff12;cursor:default}
+.controls{display:flex;flex-wrap:wrap;gap:9px;margin-top:15px}
+button,.upload{border:0;border-radius:10px;padding:11px 14px;color:white;background:#293246;font-weight:750;font-size:.87rem;cursor:pointer}
+button.primary{background:linear-gradient(110deg,#7164ed,#9a65dd)}
+button:hover,.upload:hover{filter:brightness(1.15);transform:translateY(-1px)}
+.upload{display:inline-flex;align-items:center;background:#24404a}
+input[type=file]{display:none}
+.status{min-height:24px;margin:13px 2px 0;color:var(--muted);font-size:.86rem;line-height:1.5}
+.win{display:none;text-align:center;padding:17px;margin-top:14px;border-radius:14px;background:#48dfc812;border:1px solid #48dfc855}
+.win.show{display:block;animation:pop .4s ease}.win b{color:var(--mint)}
+.links{display:flex;justify-content:center;flex-wrap:wrap;gap:9px;margin-top:12px}
+.links a{color:white;text-decoration:none;background:#293246;padding:9px 12px;border-radius:9px;font-size:.85rem;font-weight:700}
+.below{margin-top:65px;padding-top:25px;border-top:1px solid #ffffff1a}
+.below p{color:var(--muted);line-height:1.7;max-width:700px}
+footer{text-align:center;color:#7f899c;font-size:.8rem;margin-top:55px}
+@keyframes pop{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:none}}
+@media(max-width:800px){header{margin-bottom:30px}.layout{grid-template-columns:1fr;gap:28px}.game{padding:15px}.instructions{margin-top:18px}}
+</style>
+</head>
+<body>
+<main class="wrap">
+<header><div class="brand">REESHAV<span>.</span></div><small>Software Engineer · Java Backend Developer</small></header>
+<section class="layout">
+<div>
+  <div class="kicker">A little challenge before we meet</div>
+  <h1>Piece together<br><em>my journey.</em></h1>
+  <p class="lead">A picture is made of many pieces, just like a career. Slide the tiles into the empty space and reveal the picture behind my portfolio.</p>
+  <div class="instructions"><b>How to play</b><br>Click or tap a tile next to the empty square to slide it into the gap. Keep going until the picture is complete. You can also use the arrow keys when the puzzle board is focused.</div>
+</div>
+<div class="game">
+  <div class="gamehead"><strong>🧩 The picture puzzle</strong><span class="moves" id="moves">Moves: 0</span></div>
+  <div class="board" id="board" aria-label="3 by 3 sliding picture puzzle" tabindex="0"></div>
+  <div class="controls">
+    <button class="primary" id="shuffle">Shuffle puzzle</button>
+    <button id="reset">Reset</button>
+    <label class="upload" for="photo">Use my picture</label>
+    <input id="photo" type="file" accept="image/*">
+  </div>
+  <div class="status" id="status" aria-live="polite">Solve the puzzle to unlock the portfolio links.</div>
+  <div class="win" id="win"><b>🎉 You solved it!</b><div>Your next move: explore my work.</div>
+    <div class="links">
+      <a href="#about">About me</a><a href="#projects">Projects</a>
+      <a href="resume.pdf" target="_blank" rel="noopener">Resume PDF</a>
+      <a href="https://github.com/anand-classes" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://www.linkedin.com/" target="_blank" rel="noopener">LinkedIn</a>
+    </div>
+  </div>
+</div>
+</section>
+<section class="below" id="about"><div class="kicker">Behind the picture</div><h2>About me</h2><p>I'm Reeshav Anand, a software engineer focused on Java backend development. I enjoy building reliable applications, learning modern technologies and sharing knowledge with others.</p></section>
+<section class="below" id="projects"><div class="kicker">Things I've built</div><h2>Projects</h2><p>Add your project descriptions, technology stacks, GitHub repositories and live demos here. Replace this starter text with your real projects before publishing.</p></section>
+<footer>Made with curiosity and code · Reeshav Anand</footer>
+</main>
+<script>
+const boardEl=document.getElementById('board'),movesEl=document.getElementById('moves'),statusEl=document.getElementById('status'),winEl=document.getElementById('win');
+let tiles=[0,1,2,3,4,5,6,7,-1],moves=0;
+let pictureUrl='assets/puzzle-image.jpg';
+const solved=[0,1,2,3,4,5,6,7,-1];
+function positionOfBlank(){return tiles.indexOf(-1)}
+function adjacent(a,b){return Math.abs(Math.floor(a/3)-Math.floor(b/3))+Math.abs(a%3-b%3)===1}
+function render(){
+ boardEl.innerHTML='';
+ tiles.forEach((piece,pos)=>{
+  const el=document.createElement('button');el.type='button';el.className='tile'+(piece===-1?' blank':'');
+  el.setAttribute('aria-label',piece===-1?'Empty space':`Move picture tile ${piece+1}`);
+  if(piece!==-1){const row=Math.floor(piece/3),col=piece%3;el.style.backgroundPosition=`${col*50}% ${row*50}%`;el.style.setProperty('--puzzle-image',`url("${pictureUrl}")`);el.addEventListener('click',()=>move(pos));}
+  else{el.disabled=true}
+  boardEl.appendChild(el);
+ });
+ movesEl.textContent=`Moves: ${moves}`;
+}
+function move(pos){
+ const blank=positionOfBlank();if(!adjacent(pos,blank))return;
+ [tiles[pos],tiles[blank]]=[tiles[blank],tiles[pos]];moves++;render();checkWin();
+}
+function checkWin(){
+ const done=tiles.every((v,i)=>v===solved[i]);
+ if(done){statusEl.textContent='Picture complete. Welcome to my portfolio!';winEl.classList.add('show')}
+ else{winEl.classList.remove('show');statusEl.textContent='Nice move. Keep sliding tiles into the empty square.'}
+}
+function shuffle(){
+ tiles=[...solved];let blank=8,previous=-1;
+ for(let i=0;i<120;i++){
+  const choices=[0,1,2,3,4,5,6,7,8].filter(p=>adjacent(p,blank)&&p!==previous);
+  const next=choices[Math.floor(Math.random()*choices.length)];
+  [tiles[blank],tiles[next]]=[tiles[next],tiles[blank]];previous=blank;blank=next;
+ }
+ moves=0;winEl.classList.remove('show');statusEl.textContent='Puzzle shuffled. Slide a tile next to the empty space.';render();
+}
+function reset(){tiles=[...solved];moves=0;winEl.classList.remove('show');statusEl.textContent='Picture reset. Press Shuffle puzzle to play.';render()}
+document.getElementById('shuffle').addEventListener('click',shuffle);
+document.getElementById('reset').addEventListener('click',reset);
+document.getElementById('photo').addEventListener('change',e=>{
+ const file=e.target.files[0];if(!file)return;
+ if(pictureUrl.startsWith('blob:'))URL.revokeObjectURL(pictureUrl);
+ pictureUrl=URL.createObjectURL(file);reset();statusEl.textContent='Your picture is loaded. Shuffle the puzzle when ready.';
+});
+boardEl.addEventListener('keydown',e=>{
+ const blank=positionOfBlank(),r=Math.floor(blank/3),c=blank%3;let target=-1;
+ if(e.key==='ArrowUp'&&r<2)target=blank+3;
+ if(e.key==='ArrowDown'&&r>0)target=blank-3;
+ if(e.key==='ArrowLeft'&&c<2)target=blank+1;
+ if(e.key==='ArrowRight'&&c>0)target=blank-1;
+ if(target>=0){e.preventDefault();move(target)}
+});
+render();shuffle();
+</script>
+</body>
+</html>
